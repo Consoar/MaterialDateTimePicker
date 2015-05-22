@@ -468,8 +468,12 @@ public abstract class MonthView extends View {
             int calendarDay = (i + mWeekStart) % mNumDays;
             int x = (2 * i + 1) * dayWidthHalf + mEdgePadding;
             mDayLabelCalendar.set(Calendar.DAY_OF_WEEK, calendarDay);
+            int len = 1;
+            if ("zh".equals(Locale.getDefault().getLanguage())) {
+                len = 2;
+            }
             canvas.drawText(mDayLabelCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT,
-                    Locale.getDefault()).toUpperCase(Locale.getDefault()).substring(0,1), x, y,
+                            Locale.getDefault()).toUpperCase(Locale.getDefault()).substring(0,len), x, y,
                     mMonthDayLabelPaint);
         }
     }
