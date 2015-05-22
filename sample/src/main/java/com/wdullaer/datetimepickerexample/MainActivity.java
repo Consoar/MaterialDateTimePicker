@@ -1,9 +1,8 @@
 package com.wdullaer.datetimepickerexample;
 
-import android.app.Dialog;
 import android.content.DialogInterface;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -69,7 +68,8 @@ public class MainActivity extends ActionBarActivity implements
                         MainActivity.this,
                         now.get(Calendar.YEAR),
                         now.get(Calendar.MONTH),
-                        now.get(Calendar.DAY_OF_MONTH)
+                        now.get(Calendar.DAY_OF_MONTH),
+                        true
                 );
                 dpd.show(getFragmentManager(), "Datepickerdialog");
             }
@@ -111,5 +111,11 @@ public class MainActivity extends ActionBarActivity implements
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         String date = "You picked the following date: "+dayOfMonth+"/"+monthOfYear+"/"+year;
         dateTextView.setText(date);
+    }
+
+    @Override
+    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, boolean isLunar) {
+        String date = "You picked the following date: "+dayOfMonth+"/"+monthOfYear+"/"+year;
+        dateTextView.setText(date+" "+(isLunar?"阴历":"阳历"));
     }
 }

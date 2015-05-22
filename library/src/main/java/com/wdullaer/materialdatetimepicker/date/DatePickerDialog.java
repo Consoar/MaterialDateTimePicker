@@ -113,6 +113,12 @@ public class DatePickerDialog extends DialogFragment implements
     private String mYearPickerDescription;
     private String mSelectYear;
 
+    private enum CalendarType{
+            SOLAR,
+            LUNAR
+    }
+    private static boolean showLunar = false;
+    private CalendarType calendarType = CalendarType.SOLAR;
     /**
      * The callback used to indicate the user is done filling in the date.
      */
@@ -126,6 +132,16 @@ public class DatePickerDialog extends DialogFragment implements
          * @param dayOfMonth The day of the month that was set.
          */
         void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth);
+
+        /**
+         * @param view The view associated with this listener.
+         * @param year The year that was set.
+         * @param monthOfYear The month that was set (0-11) for compatibility
+         *            with {@link java.util.Calendar}.
+         * @param dayOfMonth The day of the month that was set.
+         * @param isLunar is Lunar date;
+         */
+        void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, boolean isLunar);
     }
 
     /**
@@ -150,6 +166,22 @@ public class DatePickerDialog extends DialogFragment implements
     public static DatePickerDialog newInstance(OnDateSetListener callBack, int year,
             int monthOfYear,
             int dayOfMonth) {
+        DatePickerDialog ret = new DatePickerDialog();
+        ret.initialize(callBack, year, monthOfYear, dayOfMonth);
+        return ret;
+    }
+
+    /**
+     * @param callBack How the parent is notified that the date is set.
+     * @param year The initial year of the dialog.
+     * @param monthOfYear The initial month of the dialog.
+     * @param dayOfMonth The initial day of the dialog.
+     * @param showLunarCalendar show Lunar date
+     */
+    public static DatePickerDialog newInstance(OnDateSetListener callBack, int year,
+                                               int monthOfYear,
+                                               int dayOfMonth, boolean showLunarCalendar) {
+        showLunar = showLunarCalendar;
         DatePickerDialog ret = new DatePickerDialog();
         ret.initialize(callBack, year, monthOfYear, dayOfMonth);
         return ret;
@@ -224,7 +256,12 @@ public class DatePickerDialog extends DialogFragment implements
         }
 
         final Activity activity = getActivity();
-        mDayPickerView = new SimpleDayPickerView(activity, this);
+        if (showLunar) {
+            mDayPickerView = new LunarDayPickerView(activity, this);
+        } else {
+            mDayPickerView = new SimpleDayPickerView(activity, this);
+        }
+
         mYearPickerView = new YearPickerView(activity, this);
 
         Resources res = getResources();
@@ -246,6 +283,24 @@ public class DatePickerDialog extends DialogFragment implements
         animation2.setDuration(ANIMATION_DURATION);
         mAnimator.setOutAnimation(animation2);
 
+        final Button calendarButton = (Button) view.findViewById(R.id.calendarType);
+        calendarButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tryVibrate();
+                if (calendarType == CalendarType.SOLAR) {
+                    calendarType = CalendarType.LUNAR;
+                    calendarButton.setText(getString(R.string.mdtp_calendar_type_lunar));
+                } else {
+                    calendarType = CalendarType.SOLAR;
+                    calendarButton.setText(getString(R.string.mdtp_calendar_type_solar));
+                }
+            }
+        });
+        calendarButton.setTypeface(TypefaceHelper.get(activity, "Roboto-Medium"));
+        calendarButton.setVisibility(showLunar ? View.VISIBLE : View.GONE);
+
+
         Button okButton = (Button) view.findViewById(R.id.ok);
         okButton.setOnClickListener(new OnClickListener() {
 
@@ -253,8 +308,13 @@ public class DatePickerDialog extends DialogFragment implements
             public void onClick(View v) {
                 tryVibrate();
                 if (mCallBack != null) {
-                    mCallBack.onDateSet(DatePickerDialog.this, mCalendar.get(Calendar.YEAR),
-                            mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
+                        if (showLunar) {
+                            mCallBack.onDateSet(DatePickerDialog.this, mCalendar.get(Calendar.YEAR),
+                                    mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH),calendarType == CalendarType.LUNAR);
+                        } else {
+                            mCallBack.onDateSet(DatePickerDialog.this, mCalendar.get(Calendar.YEAR),
+                                    mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DAY_OF_MONTH));
+                        }
                 }
                 dismiss();
             }
@@ -360,8 +420,20 @@ public class DatePickerDialog extends DialogFragment implements
 
     private void updateDisplay(boolean announce) {
         if (mDayOfWeekView != null) {
-            mDayOfWeekView.setText(mCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG,
-                    Locale.getDefault()).toUpperCase(Locale.getDefault()));
+            if (showLunar) {
+                Solar solar = new Solar();
+                solar.solarYear = mCalendar.get(Calendar.YEAR);
+                solar.solarMonth = mCalendar.get(Calendar.MONTH)+1;
+                solar.solarDay = mCalendar.get(Calendar.DAY_OF_MONTH);
+                Lunar lunar = LunarSolarConverter.SolarToLunar(solar);
+                String string = LunarSolarConverter.getLunarDateString(lunar);
+                string = string + " " + mCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG,
+                        Locale.getDefault()).toUpperCase(Locale.getDefault());
+                mDayOfWeekView.setText(string);
+            } else {
+                mDayOfWeekView.setText(mCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG,
+                        Locale.getDefault()).toUpperCase(Locale.getDefault()));
+            }
         }
 
         mSelectedMonthTextView.setText(mCalendar.getDisplayName(Calendar.MONTH, Calendar.SHORT,

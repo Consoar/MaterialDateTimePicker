@@ -68,4 +68,10 @@
 
     <!-- DO NOT TRANSLATE -->
     <string name="mdtp_day_of_week_label_typeface" translatable="false">sans-serif</string>
+
+    <!-- DO NOT TRANSLATE -->
+    <string name="mdtp_calendar_type_solar" translatable="false">Solar</string>
+
+    <!-- DO NOT TRANSLATE -->
+    <string name="mdtp_calendar_type_lunar" translatable="false">Lunar</string>
 </resources>

@@ -131,6 +131,7 @@ public abstract class MonthView extends View {
     private String mMonthTitleTypeface;
 
     protected Paint mMonthNumPaint;
+    protected Paint mLunarMonthNumPaint;
     protected Paint mMonthTitlePaint;
     protected Paint mMonthTitleBGPaint;
     protected Paint mSelectedCirclePaint;
@@ -311,7 +312,7 @@ public abstract class MonthView extends View {
         mMonthDayLabelPaint.setAntiAlias(true);
         mMonthDayLabelPaint.setTextSize(MONTH_DAY_LABEL_TEXT_SIZE);
         mMonthDayLabelPaint.setColor(mMonthDayTextColor);
-        mMonthDayLabelPaint.setTypeface(TypefaceHelper.get(getContext(),"Roboto-Medium"));
+        mMonthDayLabelPaint.setTypeface(TypefaceHelper.get(getContext(), "Roboto-Medium"));
         mMonthDayLabelPaint.setStyle(Style.FILL);
         mMonthDayLabelPaint.setTextAlign(Align.CENTER);
         mMonthDayLabelPaint.setFakeBoldText(true);
@@ -322,6 +323,13 @@ public abstract class MonthView extends View {
         mMonthNumPaint.setStyle(Style.FILL);
         mMonthNumPaint.setTextAlign(Align.CENTER);
         mMonthNumPaint.setFakeBoldText(false);
+
+        mLunarMonthNumPaint = new Paint();
+        mLunarMonthNumPaint.setAntiAlias(true);
+        mLunarMonthNumPaint.setTextSize(MINI_DAY_NUMBER_TEXT_SIZE - 2);
+        mLunarMonthNumPaint.setStyle(Style.FILL);
+        mLunarMonthNumPaint.setTextAlign(Align.CENTER);
+        mLunarMonthNumPaint.setFakeBoldText(false);
     }
 
     @Override
@@ -485,14 +493,14 @@ public abstract class MonthView extends View {
      * @param canvas The canvas to draw on
      */
     protected void drawMonthNums(Canvas canvas) {
-        int y = (((mRowHeight + MINI_DAY_NUMBER_TEXT_SIZE) / 2) - DAY_SEPARATOR_WIDTH)
+        int y = (((mRowHeight + MINI_DAY_NUMBER_TEXT_SIZE) / 3) - DAY_SEPARATOR_WIDTH)
                 + getMonthHeaderSize();
         final float dayWidthHalf = (mWidth - mEdgePadding * 2) / (mNumDays * 2.0f);
         int j = findDayOffset();
         for (int dayNumber = 1; dayNumber <= mNumCells; dayNumber++) {
             final int x = (int)((2 * j + 1) * dayWidthHalf + mEdgePadding);
 
-            int yRelativeToDay = (mRowHeight + MINI_DAY_NUMBER_TEXT_SIZE) / 2 - DAY_SEPARATOR_WIDTH;
+            int yRelativeToDay = (mRowHeight + MINI_DAY_NUMBER_TEXT_SIZE) / 3 - DAY_SEPARATOR_WIDTH;
 
             final int startX = (int)(x - dayWidthHalf);
             final int stopX = (int)(x + dayWidthHalf);

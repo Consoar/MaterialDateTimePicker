@@ -13,21 +13,28 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="48dp"
-    android:orientation="horizontal"
     android:background="@color/mdtp_background_color"
-    android:gravity="end|right"
     android:layout_gravity="center_vertical"
     android:layout_marginBottom="8dp">
 
     <Button
+        android:id="@+id/calendarType"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="16dp"
+        style="@style/mdtp_ActionButton.Text"
+        android:text="@string/mdtp_calendar_type_solar" />
+
+    <Button
         android:id="@+id/cancel"
+        android:layout_toLeftOf="@+id/ok"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:layout_marginRight="8dp"
-        android:layout_marginEnd="8dp"
         style="@style/mdtp_ActionButton.Text"
         android:text="@android:string/cancel" />
 
@@ -35,8 +42,8 @@
         android:id="@+id/ok"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
-        android:layout_marginEnd="16dp"
         style="@style/mdtp_ActionButton.Text"
         android:text="@android:string/ok" />
-</LinearLayout>
+</RelativeLayout>
