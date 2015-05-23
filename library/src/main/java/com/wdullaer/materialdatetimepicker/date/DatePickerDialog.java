@@ -118,6 +118,7 @@ public class DatePickerDialog extends DialogFragment implements
             LUNAR
     }
     private static boolean showLunar = false;
+    private static boolean isLunar = false;
     private CalendarType calendarType = CalendarType.SOLAR;
     /**
      * The callback used to indicate the user is done filling in the date.
@@ -181,6 +182,27 @@ public class DatePickerDialog extends DialogFragment implements
     public static DatePickerDialog newInstance(OnDateSetListener callBack, int year,
                                                int monthOfYear,
                                                int dayOfMonth, boolean showLunarCalendar) {
+        isLunar = false;
+        showLunar = showLunarCalendar;
+        DatePickerDialog ret = new DatePickerDialog();
+        ret.initialize(callBack, year, monthOfYear, dayOfMonth);
+        return ret;
+    }
+
+    /**
+     * @param callBack How the parent is notified that the date is set.
+     * @param year The initial year of the dialog.
+     * @param monthOfYear The initial month of the dialog.
+     * @param dayOfMonth The initial day of the dialog.
+     * @param showLunarCalendar show Lunar date
+     * @param isLunarCalendar the date is Lunar date
+     */
+    public static DatePickerDialog newInstance(OnDateSetListener callBack, int year,
+                                               int monthOfYear,
+                                               int dayOfMonth,
+                                               boolean showLunarCalendar,
+                                               boolean isLunarCalendar) {
+        isLunar = isLunarCalendar;
         showLunar = showLunarCalendar;
         DatePickerDialog ret = new DatePickerDialog();
         ret.initialize(callBack, year, monthOfYear, dayOfMonth);
@@ -284,6 +306,13 @@ public class DatePickerDialog extends DialogFragment implements
         mAnimator.setOutAnimation(animation2);
 
         final Button calendarButton = (Button) view.findViewById(R.id.calendarType);
+        if (isLunar) {
+            calendarType = CalendarType.LUNAR;
+            calendarButton.setText(getString(R.string.mdtp_calendar_type_lunar));
+        } else {
+            calendarType = CalendarType.SOLAR;
+            calendarButton.setText(getString(R.string.mdtp_calendar_type_solar));
+        }
         calendarButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
