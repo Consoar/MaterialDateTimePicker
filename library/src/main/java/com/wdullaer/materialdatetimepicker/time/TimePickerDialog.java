@@ -19,7 +19,6 @@ package com.wdullaer.materialdatetimepicker.time;
 import android.animation.ObjectAnimator;
 import android.app.ActionBar.LayoutParams;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
@@ -289,8 +288,11 @@ public class TimePickerDialog extends DialogFragment implements OnValueSelectedL
                 getDialog().cancel();
             }
         });
-        mCancelButton.setTypeface(TypefaceHelper.get(getDialog().getContext(),"Roboto-Medium"));
+        mCancelButton.setTypeface(TypefaceHelper.get(getDialog().getContext(), "Roboto-Medium"));
         mCancelButton.setVisibility(isCancelable() ? View.VISIBLE : View.GONE);
+
+        Button calendarButton = (Button) view.findViewById(R.id.calendarType);
+        calendarButton.setVisibility(View.GONE);
 
         // Enable or disable the AM/PM view.
         mAmPmHitspace = view.findViewById(R.id.ampm_hitspace);
