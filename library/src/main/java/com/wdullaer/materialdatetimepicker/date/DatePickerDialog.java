@@ -455,7 +455,7 @@ public class DatePickerDialog extends DialogFragment implements
                 solar.solarMonth = mCalendar.get(Calendar.MONTH)+1;
                 solar.solarDay = mCalendar.get(Calendar.DAY_OF_MONTH);
                 Lunar lunar = LunarSolarConverter.SolarToLunar(solar);
-                String string = LunarSolarConverter.getLunarDateString(lunar);
+                String string = LunarSolarConverter.getLunarDateStringWithAnimal(lunar);
                 string = string + " " + mCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG,
                         Locale.getDefault()).toUpperCase(Locale.getDefault());
                 mDayOfWeekView.setText(string);

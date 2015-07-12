@@ -18,6 +18,7 @@ package com.wdullaer.materialdatetimepicker.date;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 
 public class LunarMonthView extends MonthView {
@@ -46,8 +47,9 @@ public class LunarMonthView extends MonthView {
             mLunarMonthNumPaint.setColor(mTodayNumberColor);
         } else {
             mMonthNumPaint.setColor(mDayTextColor);
-            mLunarMonthNumPaint.setColor(mDayTextColor);
+            mLunarMonthNumPaint.setColor(Color.parseColor("#AAAAAA"));
         }
+
         Solar solar = new Solar();
         solar.solarYear = year;
         solar.solarMonth = month+1;
