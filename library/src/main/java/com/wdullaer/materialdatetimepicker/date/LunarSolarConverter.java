@@ -100,7 +100,7 @@ public class LunarSolarConverter {
 	 * Tiangan:甲乙丙丁戊己庚辛壬癸<br/>Dizhi: 子丑寅卯辰巳无为申酉戌亥
 	 */
 	public static String lunarYearToGanZhi(int lunarYear) {
-		return (Gan[lunarYear % 10] + Zhi[lunarYear % 12]) + "年";
+		return (Gan[lunarYear % 10] + Zhi[lunarYear % 12]);
 	}
 
 
@@ -278,10 +278,10 @@ public class LunarSolarConverter {
 	 */
 	public static String getLunarDateString(Lunar lunar) {
 		if (lunar.isleap) {
-			return getLunarYearString(lunar.lunarYear) + "闰" + getLunarMonthString(lunar.lunarMonth)
+			return getLunarYearString(lunar.lunarYear) + "年 " + "闰" + getLunarMonthString(lunar.lunarMonth)
 					+ "月" + getLunarDayString(lunar.lunarDay);
 		} else {
-			return getLunarYearString(lunar.lunarYear) + getLunarMonthString(lunar.lunarMonth)
+			return getLunarYearString(lunar.lunarYear) + "年 " + getLunarMonthString(lunar.lunarMonth)
 					+ "月" + getLunarDayString(lunar.lunarDay);
 		}
 	}
@@ -293,10 +293,10 @@ public class LunarSolarConverter {
 	 */
 	public static String getLunarDateStringWithAnimal(Lunar lunar) {
 		if (lunar.isleap) {
-			return getLunarYearString(lunar.lunarYear) + "【" + getAnimals(lunar.lunarYear) + "】" + "闰" + getLunarMonthString(lunar.lunarMonth)
+			return getLunarYearString(lunar.lunarYear) + getAnimals(lunar.lunarYear) + "年 " + "闰" + getLunarMonthString(lunar.lunarMonth)
 					+ "月" + getLunarDayString(lunar.lunarDay);
 		} else {
-			return getLunarYearString(lunar.lunarYear) + "【" + getAnimals(lunar.lunarYear) + "】" + getLunarMonthString(lunar.lunarMonth)
+			return getLunarYearString(lunar.lunarYear) + getAnimals(lunar.lunarYear) + "年 " + getLunarMonthString(lunar.lunarMonth)
 					+ "月" + getLunarDayString(lunar.lunarDay);
 		}
 	}
