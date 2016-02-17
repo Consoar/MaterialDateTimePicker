@@ -24,6 +24,7 @@ import android.graphics.Paint.Align;
 import android.graphics.Paint.Style;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
@@ -43,6 +44,7 @@ import com.wdullaer.materialdatetimepicker.Utils;
 import com.wdullaer.materialdatetimepicker.date.MonthAdapter.CalendarDay;
 
 import java.security.InvalidParameterException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Formatter;
 import java.util.HashMap;
@@ -473,16 +475,12 @@ public abstract class MonthView extends View {
         int dayWidthHalf = (mWidth - mEdgePadding * 2) / (mNumDays * 2);
 
         for (int i = 0; i < mNumDays; i++) {
-            int calendarDay = (i + mWeekStart) % mNumDays;
             int x = (2 * i + 1) * dayWidthHalf + mEdgePadding;
+
+            int calendarDay = (i + mWeekStart) % mNumDays;
             mDayLabelCalendar.set(Calendar.DAY_OF_WEEK, calendarDay);
-            int len = 1;
-            if ("zh".equals(Locale.getDefault().getLanguage())) {
-                len = 2;
-            }
-            canvas.drawText(mDayLabelCalendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT,
-                            Locale.getDefault()).toUpperCase(Locale.getDefault()).substring(0,len), x, y,
-                    mMonthDayLabelPaint);
+            String weekString = getWeekDayLabel(mDayLabelCalendar);
+            canvas.drawText(weekString, x, y, mMonthDayLabelPaint);
         }
     }
 
@@ -597,6 +595,52 @@ public abstract class MonthView extends View {
 
         // This is a no-op if accessibility is turned off.
         mTouchHelper.sendEventForVirtualView(day, AccessibilityEvent.TYPE_VIEW_CLICKED);
+    }
+
+    /**
+     * Return a 1 or 2 letter String for use as a weekday label
+     * @param day The day for which to generate a label
+     * @return The weekday label
+     */
+    private String getWeekDayLabel(Calendar day) {
+        Locale locale = Locale.getDefault();
+
+        // Localised short version of the string is not available on API < 18
+        if(Build.VERSION.SDK_INT < 18) {
+            String dayName = new SimpleDateFormat("E", locale).format(day.getTime());
+            String dayLabel = dayName.toUpperCase(locale).substring(0, 1);
+
+            // Chinese labels should be fetched right to left
+            if (locale.equals(Locale.CHINA) || locale.equals(Locale.CHINESE) || locale.equals(Locale.SIMPLIFIED_CHINESE) || locale.equals(Locale.TRADITIONAL_CHINESE)) {
+                int len = dayName.length();
+                dayLabel = dayName.substring(len -1, len);
+            }
+
+            // Most hebrew labels should select the second to last character
+            if (locale.getLanguage().equals("he") || locale.getLanguage().equals("iw")) {
+                if(mDayLabelCalendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
+                    int len = dayName.length();
+                    dayLabel = dayName.substring(len - 2, len - 1);
+                }
+                else {
+                    // I know this is duplication, but it makes the code easier to grok by
+                    // having all hebrew code in the same block
+                    dayLabel = dayName.toUpperCase(locale).substring(0, 1);
+                }
+            }
+
+            // Catalan labels should be two digits in lowercase
+            if (locale.getLanguage().equals("ca"))
+                dayLabel = dayName.toLowerCase().substring(0,2);
+
+            // Correct single character label in Spanish is X
+            if (locale.getLanguage().equals("es") && day.get(Calendar.DAY_OF_WEEK) == Calendar.WEDNESDAY)
+                dayLabel = "X";
+
+            return dayLabel;
+        }
+        // Getting the short label is a one liner on API >= 18
+        return new SimpleDateFormat("EEEEE", locale).format(day.getTime());
     }
 
     /**
