@@ -309,22 +309,26 @@ public class LunarSolarConverter {
 		return lunarYearToGanZhi(lunarYear - 1864); //1864年是甲子年
 	}
 
-	/**
-	 * 返回指定数字的农历月份表示字符串
-	 *
-	 * @param lunarMonth 农历月份(数字)
-	 * @return 农历月份字符串 (例:正)
-	 */
-	public static String getLunarMonthString(int lunarMonth) {
-		String lunarMonthString = "";
-		if (lunarMonth == 1) {
-			lunarMonthString = lunarString2[4];
-		} else {
-			if (lunarMonth > 9)
-				lunarMonthString += lunarString2[1];
-			if (lunarMonth % 10 > 0)
-				lunarMonthString += lunarString1[lunarMonth % 10];
-		}
-		return lunarMonthString;
-	}
+    /**
+     * 返回指定数字的农历月份表示字符串
+     *
+     * @param lunarMonth 农历月份(数字)
+     * @return 农历月份字符串 (例:正)
+     */
+    public static String getLunarMonthString(int lunarMonth) {
+        String lunarMonthString = "";
+        if (lunarMonth == 1) {
+            lunarMonthString = lunarString2[4];
+        } else if (lunarMonth == 11) {
+            lunarMonthString = lunarString2[6];
+        } else if (lunarMonth == 12) {
+            lunarMonthString = lunarString2[5];
+        } else {
+            if (lunarMonth > 9)
+                lunarMonthString += lunarString2[1];
+            if (lunarMonth % 10 > 0)
+                lunarMonthString += lunarString1[lunarMonth % 10];
+        }
+        return lunarMonthString;
+    }
 }
