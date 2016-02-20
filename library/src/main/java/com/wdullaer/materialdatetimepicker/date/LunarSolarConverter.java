@@ -9,10 +9,9 @@ public class LunarSolarConverter {
 	private static String[] Animals = {"鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊",
 			"猴", "鸡", "狗", "猪"};
 
-	public final static String[] lunarString1 = {"零", "一", "二", "三", "四", "五",
-			"六", "七", "八", "九"};
-	public final static String[] lunarString2 = {"初", "十", "廿", "卅", "正", "腊",
-			"冬", "闰"};
+    public final static String[] lunarString1 = {"零", "一", "二", "三", "四", "五",
+            "六", "七", "八", "九"};
+    public final static String[] lunarString2 = { "初", "十", "廿", "卅", "正", "腊", "冬", "闰" };
 	/*
      * |----4位闰月|-------------13位1为30天，0为29天|
      * 0x1096d 是1900年
@@ -243,7 +242,6 @@ public class LunarSolarConverter {
 		int dm = GetBitInt(days, 1, 12 - (lunarMonth - 1)) == 1 ? 30 : 29;
 		return dm;
 	}
-
 
 	/**
 	 * 返回指定数字的农历日表示字符串
