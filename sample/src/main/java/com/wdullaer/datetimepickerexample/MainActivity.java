@@ -1,115 +1,69 @@
 package com.wdullaer.datetimepickerexample;
 
-import android.app.Dialog;
-import android.content.DialogInterface;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.TextView;
+import com.google.android.material.tabs.TabLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
-import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
-import com.wdullaer.materialdatetimepicker.time.RadialPickerLayout;
-import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
-
-import java.util.Calendar;
-
-public class MainActivity extends ActionBarActivity implements
-    TimePickerDialog.OnTimeSetListener,
-    DatePickerDialog.OnDateSetListener
+public class MainActivity extends AppCompatActivity
 {
-    private TextView timeTextView;
-    private TextView dateTextView;
-    private CheckBox mode24Hours;
+    ViewPager viewPager;
+    PickerAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Find our View instances
-        timeTextView = (TextView)findViewById(R.id.time_textview);
-        dateTextView = (TextView)findViewById(R.id.date_textview);
-        Button timeButton = (Button)findViewById(R.id.time_button);
-        Button dateButton = (Button)findViewById(R.id.date_button);
-        mode24Hours = (CheckBox)findViewById(R.id.mode_24_hours);
+        adapter = new PickerAdapter(getSupportFragmentManager());
+        viewPager = findViewById(R.id.pager);
+        viewPager.setAdapter(adapter);
 
-        // Show a timepicker when the timeButton is clicked
-        timeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar now = Calendar.getInstance();
-                TimePickerDialog tpd = TimePickerDialog.newInstance(
-                        MainActivity.this,
-                        now.get(Calendar.HOUR_OF_DAY),
-                        now.get(Calendar.MINUTE),
-                        mode24Hours.isChecked()
-                );
-                tpd.setThemeDark(false);
-                tpd.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialogInterface) {
-                        Log.d("TimePicker", "Dialog was cancelled");
-                    }
-                });
-                tpd.show(getFragmentManager(), "Timepickerdialog");
-            }
-        });
-
-        // Show a datepicker when the dateButton is clicked
-        dateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar now = Calendar.getInstance();
-                DatePickerDialog dpd = DatePickerDialog.newInstance(
-                        MainActivity.this,
-                        now.get(Calendar.YEAR),
-                        now.get(Calendar.MONTH),
-                        now.get(Calendar.DAY_OF_MONTH)
-                );
-                dpd.show(getFragmentManager(), "Datepickerdialog");
-            }
-        });
+        setSupportActionBar(findViewById(R.id.toolbar));
+        TabLayout tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        for(int i=0; i < adapter.getCount(); i++) //noinspection ConstantConditions
+            tabLayout.getTabAt(i).setText(adapter.getTitle(i));
     }
 
+    private class PickerAdapter extends FragmentPagerAdapter {
+        private static final int NUM_PAGES = 2;
+        Fragment timePickerFragment;
+        Fragment datePickerFragment;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        PickerAdapter(FragmentManager fm) {
+            super(fm);
+            timePickerFragment = new TimePickerFragment();
+            datePickerFragment = new DatePickerFragment();
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        @Override
+        public int getCount() {
+            return NUM_PAGES;
+        }
 
-    @Override
-    public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
-        String hourString = hourOfDay < 10 ? "0"+hourOfDay : ""+hourOfDay;
-        String minuteString = minute < 10 ? "0"+minute : ""+minute;
-        String time = "You picked the following time: "+hourString+"h"+minuteString;
-        timeTextView.setText(time);
-    }
+        @Override
+        public Fragment getItem(int position) {
+            switch(position) {
+                case 0:
+                    return timePickerFragment;
+                case 1:
+                default:
+                    return datePickerFragment;
+            }
+        }
 
-    @Override
-    public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String date = "You picked the following date: "+dayOfMonth+"/"+monthOfYear+"/"+year;
-        dateTextView.setText(date);
+        int getTitle(int position) {
+            switch(position) {
+                case 0:
+                    return R.string.tab_title_time;
+                case 1:
+                default:
+                    return R.string.tab_title_date;
+            }
+        }
     }
 }

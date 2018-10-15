@@ -15,9 +15,15 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <!-- Pattern for the v1 month and year string (localised) -->
+    <string name="mdtp_date_v1_monthyear">MMMM yyyy</string>
+    <!-- Pattern for the v2 day month and year string (localised) -->
+    <string name="mdtp_date_v2_daymonthyear">EEE, MMM dd</string>
 
-    <!-- Label for button to confirm chosen date or time [CHAR LIMIT=30] -->
+    <!-- Label for date or time [CHAR LIMIT=30] -->
     <string name="mdtp_done_label">Done</string>
+    <string name="mdtp_ok">@android:string/ok</string>
+    <string name="mdtp_cancel">@android:string/cancel</string>
     <!--
          Content description for the hour selector in the time picker, which displays
          selectable hours of the day along the inside edge of a circle, as in an analog clock.
@@ -30,10 +36,21 @@
          [CHAR LIMIT=50]
     -->
     <string name="mdtp_minute_picker_description">Minutes circular slider</string>
+    <!--
+         Content description for the second selector in the time picker, which displays
+         selectable five-second intervals along the inside edge of a circle, as in an analog clock.
+         [CHAR LIMIT=50]
+    -->
+    <string name="mdtp_second_picker_description">Seconds circular slider</string>
     <!-- Accessibility announcement for hour circular picker [CHAR LIMIT=NONE] -->
     <string name="mdtp_select_hours">Select hours</string>
     <!-- Accessibility announcement for minute circular picker [CHAR LIMIT=NONE] -->
     <string name="mdtp_select_minutes">Select minutes</string>
+    <!-- Accessibility announcement for second circular picker [CHAR LIMIT=NONE] -->
+    <string name="mdtp_select_seconds">Select seconds</string>
+
+    <string name="mdtp_date">Date</string>
+    <string name="mdtp_time">Time</string>
 
     <!--
         Content description for the month and day selector in the date picker, which displays
@@ -57,7 +74,7 @@
     <string name="mdtp_deleted_key"><xliff:g id="key" example="4">%1$s</xliff:g> deleted</string>
 
     <!-- DO NOT TRANSLATE -->
-    <string name="mdtp_time_placeholder" translatable="false">--</string>
+    <string name="mdtp_time_placeholder" translatable="false">00</string>
     <!-- DO NOT TRANSLATE -->
     <string name="mdtp_time_separator" translatable="false">:</string>
 
@@ -68,4 +85,9 @@
 
     <!-- DO NOT TRANSLATE -->
     <string name="mdtp_day_of_week_label_typeface" translatable="false">sans-serif</string>
+    <string name="mdtp_previous_month_arrow" translatable="false"><![CDATA[\u276E]]></string>
+    <string name="mdtp_next_month_arrow" translatable="false"><![CDATA[\u276F]]></string>
+
+    <string name="mdtp_am">am</string>
+    <string name="mdtp_pm">pm</string>
 </resources>

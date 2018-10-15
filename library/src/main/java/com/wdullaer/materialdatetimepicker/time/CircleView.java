@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 
@@ -47,23 +48,24 @@ public class CircleView extends View {
     public CircleView(Context context) {
         super(context);
 
-        Resources res = context.getResources();
-        mCircleColor = res.getColor(R.color.mdtp_circle_color);
-        mDotColor = res.getColor(R.color.mdtp_numbers_text_color);
-        mPaint.setAntiAlias(true);
-
         mIsInitialized = false;
     }
 
-    public void initialize(Context context, boolean is24HourMode) {
+    public void initialize(Context context, TimePickerController controller) {
         if (mIsInitialized) {
             Log.e(TAG, "CircleView may only be initialized once.");
             return;
         }
 
         Resources res = context.getResources();
-        mIs24HourMode = is24HourMode;
-        if (is24HourMode) {
+
+        int colorRes = controller.isThemeDark() ? R.color.mdtp_circle_background_dark_theme : R.color.mdtp_circle_color;
+        mCircleColor = ContextCompat.getColor(context, colorRes);
+        mDotColor = controller.getAccentColor();
+        mPaint.setAntiAlias(true);
+
+        mIs24HourMode = controller.is24HourMode();
+        if (mIs24HourMode || controller.getVersion() != TimePickerDialog.Version.VERSION_1) {
             mCircleRadiusMultiplier = Float.parseFloat(
                     res.getString(R.string.mdtp_circle_radius_multiplier_24HourMode));
         } else {
@@ -75,18 +77,6 @@ public class CircleView extends View {
 
         mIsInitialized = true;
     }
-
-    /* package */ void setTheme(Context context, boolean dark) {
-        Resources res = context.getResources();
-        if (dark) {
-            mCircleColor = res.getColor(R.color.mdtp_dark_gray);
-            mDotColor = res.getColor(R.color.mdtp_white);
-        } else {
-            mCircleColor = res.getColor(R.color.mdtp_circle_color);
-            mDotColor = res.getColor(R.color.mdtp_numbers_text_color);
-        }
-    }
-
 
     @Override
     public void onDraw(Canvas canvas) {
@@ -117,6 +107,6 @@ public class CircleView extends View {
 
         // Draw a small black circle in the center.
         mPaint.setColor(mDotColor);
-        canvas.drawCircle(mXCenter, mYCenter, 4, mPaint);
+        canvas.drawCircle(mXCenter, mYCenter, 8, mPaint);
     }
 }

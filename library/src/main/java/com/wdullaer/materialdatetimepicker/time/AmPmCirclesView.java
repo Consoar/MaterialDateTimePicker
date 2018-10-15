@@ -22,6 +22,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.graphics.Paint.Align;
+import androidx.core.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 
@@ -29,6 +30,7 @@ import com.wdullaer.materialdatetimepicker.R;
 import com.wdullaer.materialdatetimepicker.Utils;
 
 import java.text.DateFormatSymbols;
+import java.util.Locale;
 
 /**
  * Draw the two smaller AM and PM circles next to where the larger circle will be.
@@ -45,11 +47,15 @@ public class AmPmCirclesView extends View {
     private int mTouchedColor;
     private int mUnselectedColor;
     private int mAmPmTextColor;
+    private int mAmPmSelectedTextColor;
+    private int mAmPmDisabledTextColor;
     private int mSelectedColor;
     private float mCircleRadiusMultiplier;
     private float mAmPmCircleRadiusMultiplier;
     private String mAmText;
     private String mPmText;
+    private boolean mAmDisabled;
+    private boolean mPmDisabled;
     private boolean mIsInitialized;
 
     private static final int AM = TimePickerDialog.AM;
@@ -68,18 +74,30 @@ public class AmPmCirclesView extends View {
         mIsInitialized = false;
     }
 
-    public void initialize(Context context, int amOrPm) {
+    public void initialize(Context context, Locale locale, TimePickerController controller, int amOrPm) {
         if (mIsInitialized) {
             Log.e(TAG, "AmPmCirclesView may only be initialized once.");
             return;
         }
 
         Resources res = context.getResources();
-        mUnselectedColor = res.getColor(R.color.mdtp_white);
-        mSelectedColor = res.getColor(R.color.mdtp_accent_color);
-        mTouchedColor = res.getColor(R.color.mdtp_accent_color_dark);
-        mAmPmTextColor = res.getColor(R.color.mdtp_ampm_text_color);
-        mSelectedAlpha = SELECTED_ALPHA;
+
+        if (controller.isThemeDark()) {
+            mUnselectedColor = ContextCompat.getColor(context, R.color.mdtp_circle_background_dark_theme);
+            mAmPmTextColor = ContextCompat.getColor(context, R.color.mdtp_white);
+            mAmPmDisabledTextColor = ContextCompat.getColor(context, R.color.mdtp_date_picker_text_disabled_dark_theme);
+            mSelectedAlpha = SELECTED_ALPHA_THEME_DARK;
+        } else {
+            mUnselectedColor = ContextCompat.getColor(context, R.color.mdtp_white);
+            mAmPmTextColor = ContextCompat.getColor(context, R.color.mdtp_ampm_text_color);
+            mAmPmDisabledTextColor = ContextCompat.getColor(context, R.color.mdtp_date_picker_text_disabled);
+            mSelectedAlpha = SELECTED_ALPHA;
+        }
+
+        mSelectedColor = controller.getAccentColor();
+        mTouchedColor = Utils.darkenColor(mSelectedColor);
+        mAmPmSelectedTextColor = ContextCompat.getColor(context, R.color.mdtp_white);
+
         String typefaceFamily = res.getString(R.string.mdtp_sans_serif);
         Typeface tf = Typeface.create(typefaceFamily, Typeface.NORMAL);
         mPaint.setTypeface(tf);
@@ -90,29 +108,17 @@ public class AmPmCirclesView extends View {
                 Float.parseFloat(res.getString(R.string.mdtp_circle_radius_multiplier));
         mAmPmCircleRadiusMultiplier =
                 Float.parseFloat(res.getString(R.string.mdtp_ampm_circle_radius_multiplier));
-        String[] amPmTexts = new DateFormatSymbols().getAmPmStrings();
+        String[] amPmTexts = new DateFormatSymbols(locale).getAmPmStrings();
         mAmText = amPmTexts[0];
         mPmText = amPmTexts[1];
+
+        mAmDisabled = controller.isAmDisabled();
+        mPmDisabled = controller.isPmDisabled();
 
         setAmOrPm(amOrPm);
         mAmOrPmPressed = -1;
 
         mIsInitialized = true;
-    }
-
-    /* package */ void setTheme(Context context, boolean themeDark) {
-        Resources res = context.getResources();
-        if (themeDark) {
-            mUnselectedColor = res.getColor(R.color.mdtp_dark_gray);
-            mSelectedColor = res.getColor(R.color.mdtp_red);
-            mAmPmTextColor = res.getColor(R.color.mdtp_white);
-            mSelectedAlpha = SELECTED_ALPHA_THEME_DARK;
-        } else {
-            mUnselectedColor = res.getColor(R.color.mdtp_white);
-            mSelectedColor = res.getColor(R.color.mdtp_accent_color);
-            mAmPmTextColor = res.getColor(R.color.mdtp_ampm_text_color);
-            mSelectedAlpha = SELECTED_ALPHA;
-        }
     }
 
     public void setAmOrPm(int amOrPm) {
@@ -135,13 +141,13 @@ public class AmPmCirclesView extends View {
 
         int distanceToAmCenter =
                 (int) Math.sqrt((xCoord - mAmXCenter)*(xCoord - mAmXCenter) + squaredYDistance);
-        if (distanceToAmCenter <= mAmPmCircleRadius) {
+        if (distanceToAmCenter <= mAmPmCircleRadius && !mAmDisabled) {
             return AM;
         }
 
         int distanceToPmCenter =
                 (int) Math.sqrt((xCoord - mPmXCenter)*(xCoord - mPmXCenter) + squaredYDistance);
-        if (distanceToPmCenter <= mAmPmCircleRadius) {
+        if (distanceToPmCenter <= mAmPmCircleRadius && !mPmDisabled) {
             return PM;
         }
 
@@ -188,11 +194,11 @@ public class AmPmCirclesView extends View {
         if (mAmOrPm == AM) {
             amColor = mSelectedColor;
             amAlpha = mSelectedAlpha;
-            amTextColor = mUnselectedColor;
+            amTextColor = mAmPmSelectedTextColor;
         } else if (mAmOrPm == PM) {
             pmColor = mSelectedColor;
             pmAlpha = mSelectedAlpha;
-            pmTextColor = mUnselectedColor;
+            pmTextColor = mAmPmSelectedTextColor;
         }
         if (mAmOrPmPressed == AM) {
             amColor = mTouchedColor;
@@ -200,6 +206,14 @@ public class AmPmCirclesView extends View {
         } else if (mAmOrPmPressed == PM) {
             pmColor = mTouchedColor;
             pmAlpha = mSelectedAlpha;
+        }
+        if (mAmDisabled) {
+            amColor = mUnselectedColor;
+            amTextColor = mAmPmDisabledTextColor;
+        }
+        if (mPmDisabled) {
+            pmColor = mUnselectedColor;
+            pmTextColor = mAmPmDisabledTextColor;
         }
 
         // Draw the two circles.

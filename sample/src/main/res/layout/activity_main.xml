@@ -1,40 +1,31 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:orientation="vertical"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.wdullaer.materialdatetimepicker.MainActivity">
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/time_textview"
-        android:layout_width="wrap_content"
+    <com.google.android.material.appbar.AppBarLayout
         android:layout_height="wrap_content"
-        android:text="@string/selected_time"/>
+        android:layout_width="match_parent"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <Button
-        android:id="@+id/time_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pick_time"/>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_width="match_parent"
+            app:layout_scrollFlags="scroll|enterAlways"/>
 
-    <CheckBox
-        android:id="@+id/mode_24_hours"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/mode_24_hours" />
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent" />
 
-    <TextView
-        android:id="@+id/date_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/selected_date"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <Button
-        android:id="@+id/date_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/pick_date"/>
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/pager"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
 
-</LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
